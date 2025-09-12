@@ -1,7 +1,7 @@
 Type: Package
 Package: rsynthbio
 Title: Synthesize Bio API Wrapper
-Version: 2.0.0
+Version: 2.2.1
 Authors@R: c(
     person("Candace", "Savonen", , 
     c("cansav09@gmail.com", "candace@synthesize.bio"),
@@ -22,8 +22,8 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 License: MIT + file LICENSE
 NeedsCompilation: no
-Packaged: 2025-06-02 20:48:23 UTC; candace
+Packaged: 2025-09-12 18:06:47 UTC; candace
 Author: Candace Savonen [aut, cre]
 Maintainer: Candace Savonen <cansav09@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-06-04 08:00:06 UTC
+Date/Publication: 2025-09-12 18:30:02 UTC

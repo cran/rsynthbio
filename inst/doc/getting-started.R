@@ -40,10 +40,6 @@ knitr::opts_chunk$set(
 # # Clear token from both session and keyring
 # clear_synthesize_token(remove_from_keyring = TRUE)
 
-## ----modalities---------------------------------------------------------------
-# # Check available modalities
-# get_valid_modalities()
-
 ## ----query--------------------------------------------------------------------
 # # Get a sample query
 # query <- get_valid_query()
@@ -52,34 +48,24 @@ knitr::opts_chunk$set(
 # str(query)
 
 ## ----predict, eval=FALSE------------------------------------------------------
-# # Request raw counts data
 # result <- predict_query(query)
 
 ## ----modify-query-------------------------------------------------------------
-# # Change output modality
-# query$output_modality <- "single_cell_rna-seq"
 # 
 # # Adjust number of samples
 # query$inputs[[1]]$num_samples <- 10
 # 
-# # Modify cell line information
-# query$inputs[[1]]$metadata$cell_line <- "MCF7"
-# query$inputs[[1]]$metadata$perturbation <- "TP53"
-# 
 # # Add a new condition
 # query$inputs[[3]] <- list(
 #   metadata = list(
-#     tissue = "lung",
-#     disease = "adenocarcinoma",
 #     sex = "male",
-#     age = "57 years",
 #     sample_type = "primary tissue"
 #   ),
 #   num_samples = 3
 # )
 
 ## ----predict-2, eval=FALSE----------------------------------------------------
-# # Request raw counts data
+# # Request counts data (not log-CPM)
 # result <- predict_query(query, as_counts = TRUE)
 
 ## ----analyze, eval=FALSE------------------------------------------------------

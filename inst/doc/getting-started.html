@@ -12,7 +12,7 @@
 
 
 
-<title>Getting Started with rsynthbio</title>
+<title>Getting Started</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -336,18 +336,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Getting Started with rsynthbio</h1>
+<h1 class="title toc-ignore">Getting Started</h1>
 
 
 
-<div id="rsynthbio" class="section level1">
-<h1>rsynthbio</h1>
 <p><code>rsynthbio</code> is an R package that provides a convenient
-interface to the Synthesize Bio API, allowing users to generate
-realistic gene expression data based on specified biological conditions.
-This package enables researchers to easily access AI-generated
-transcriptomic data for various modalities including bulk RNA-seq,
-single-cell RNA-seq, microarray data, and more.</p>
+interface to the <a href="https://www.synthesize.bio/">Synthesize
+Bio</a> API, allowing users to generate realistic gene expression data
+based on specified biological conditions. This package enables
+researchers to easily access AI-generated transcriptomic data for
+various modalities including bulk RNA-seq and single-cell RNA-seq.</p>
+<p>Alternatively, you can AI generate datasets from our <a href="https://app.synthesize.bio/datasets/">web platform</a>.</p>
 <div id="how-to-install" class="section level2">
 <h2>How to install</h2>
 <p>You can install <code>rsynthbio</code> from CRAN:</p>
@@ -394,24 +393,16 @@ committed to version control.</p>
 </div>
 <div id="basic-usage" class="section level2">
 <h2>Basic Usage</h2>
-<div id="available-modalities" class="section level3">
-<h3>Available Modalities</h3>
-<p>Some Synthesize models support generation of different gene
-expression data types.</p>
-<p>In the v2 model, you should use “bulk” for bulk gene expression.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Check available modalities</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">get_valid_modalities</span>()</span></code></pre></div>
-</div>
 <div id="creating-a-query" class="section level3">
 <h3>Creating a Query</h3>
 <p>The first step to generating AI-generated gene expression data is to
 create a query. The package provides a sample query that you can
 modify:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Get a sample query</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>()</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Inspect the query structure</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">str</span>(query)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Get a sample query</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Inspect the query structure</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">str</span>(query)</span></code></pre></div>
 <p>The query consists of:</p>
 <ol style="list-style-type: decimal">
 <li><code>output_modality</code>: The type of gene expression data to
@@ -422,90 +413,168 @@ generate (see <code>get_valid_modalities</code>)</li>
 data for</li>
 </ol>
 <p>We train our models with diverse multi-omics datasets. There are two
-model types/modes available today:</p>
+model modes available today:</p>
 <ul>
-<li><p>Sample generation: This runs in “diffusion” mode and generates
-different results for each sample requested. Use this mode to understand
-the distribution of expression across sample groups.</p></li>
-<li><p>Mean estimation: This is deterministic. For a given metadata
-specification, you will get the same values.</p></li>
+<li>Mean estimation: These models create a distribution capturing the
+biological heterogeneity consistent with the supplied metadata. This
+distribution is then sampled to predict a gene expression distribution
+that captures measurement error. The mean of that distribution serves as
+the prediction</li>
+<li>Sample generation: This model works identically to the mean
+estimation approach except that the final gene expression distribution
+is also sampled to generate realistic looking synthetic data that
+captures error associated with measurement</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Request raw counts data</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query)</span></code></pre></div>
 <p>This result will be a list of two dataframes: <code>metadata</code>
 and <code>expression</code></p>
 </div>
 <div id="modifying-a-query" class="section level3">
 <h3>Modifying a Query</h3>
 <p>You can customize the query to fit your specific research needs:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Change output modality</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>query<span class="sc">$</span>output_modality <span class="ot">&lt;-</span> <span class="st">&quot;single_cell_rna-seq&quot;</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Adjust number of samples</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>num_samples <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># Modify cell line information</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>metadata<span class="sc">$</span>cell_line <span class="ot">&lt;-</span> <span class="st">&quot;MCF7&quot;</span></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>metadata<span class="sc">$</span>perturbation <span class="ot">&lt;-</span> <span class="st">&quot;TP53&quot;</span></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># Add a new condition</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="at">metadata =</span> <span class="fu">list</span>(</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="at">tissue =</span> <span class="st">&quot;lung&quot;</span>,</span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>    <span class="at">disease =</span> <span class="st">&quot;adenocarcinoma&quot;</span>,</span>
-<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="at">sex =</span> <span class="st">&quot;male&quot;</span>,</span>
-<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>    <span class="at">age =</span> <span class="st">&quot;57 years&quot;</span>,</span>
-<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>    <span class="at">sample_type =</span> <span class="st">&quot;primary tissue&quot;</span></span>
-<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>  ),</span>
-<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>  <span class="at">num_samples =</span> <span class="dv">3</span></span>
-<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co"># Adjust number of samples</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>num_samples <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># Add a new condition</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">metadata =</span> <span class="fu">list</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">sex =</span> <span class="st">&quot;male&quot;</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">sample_type =</span> <span class="st">&quot;primary tissue&quot;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  ),</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="at">num_samples =</span> <span class="dv">3</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>)</span></code></pre></div>
+<p>The input metadata is a list of lists.</p>
+<p>Here are the available metadata fields:</p>
+<p><strong>Biological:</strong></p>
+<ul>
+<li><code>age_years</code></li>
+<li><code>cell_line_ontology_id</code></li>
+<li><code>cell_type_ontology_id</code></li>
+<li><code>developmental_stage</code></li>
+<li><code>disease_ontology_id</code></li>
+<li><code>ethnicity</code></li>
+<li><code>genotype</code></li>
+<li><code>race</code></li>
+<li><code>sample_type</code> (“cell line”, “organoid”, “other”, “primary
+cells”, “primary tissue”, “xenograft”)</li>
+<li><code>sex</code> (“male”, “female”)</li>
+<li><code>tissue_ontology_id</code></li>
+</ul>
+<p><strong>Perturbational:</strong></p>
+<ul>
+<li><code>perturbation_dose</code></li>
+<li><code>perturbation_ontology_id</code></li>
+<li><code>perturbation_time</code></li>
+<li><code>perturbation_type</code>
+(“coculture”,“compound”,“control”,“crispr”,“genetic”,“infection”,“other”,“overexpression”,“peptide
+or biologic”,“shrna”,“sirna”)</li>
+</ul>
+<p><strong>Technical:</strong></p>
+<ul>
+<li><code>study</code> (Bioproject ID)</li>
+<li><code>library_selection</code> (e.g., “cDNA”, “polyA”, “Oligo-dT” -
+see <a href="https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection" class="uri">https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection</a>)</li>
+<li><code>library_layout</code> (“PAIRED”, “SINGLE”)</li>
+<li><code>platform</code> (“illumina”)</li>
+</ul>
+</div>
+<div id="acceptable-metadata-values" class="section level3">
+<h3>Acceptable Metadata Values</h3>
+<p>The following are the valid values or expected formats for selected
+metadata keys:</p>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="88%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metadata Field</th>
+<th>Requirement / Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cell_line_ontology_id</code></td>
+<td>Requires a <a href="https://www.cellosaurus.org/">Cellosaurus
+ID</a>.</td>
+</tr>
+<tr class="even">
+<td><code>cell_type_ontology_id</code></td>
+<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/cl">CL
+ID</a>.</td>
+</tr>
+<tr class="odd">
+<td><code>disease_ontology_id</code></td>
+<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/mondo">MONDO ID</a>.</td>
+</tr>
+<tr class="even">
+<td><code>perturbation_ontology_id</code></td>
+<td>Must be a valid Ensembl gene ID (e.g.,
+<code>ENSG00000156127</code>), <a href="https://www.ebi.ac.uk/chebi/">ChEBI ID</a> (e.g.,
+<code>CHEBI:16681</code>), <a href="https://www.ebi.ac.uk/chembl/">ChEMBL ID</a> (e.g.,
+<code>CHEMBL1234567</code>), or <a href="https://www.ncbi.nlm.nih.gov/taxonomy">NCBI Taxonomy ID</a> (e.g.,
+<code>9606</code>).</td>
+</tr>
+<tr class="odd">
+<td><code>tissue_ontology_id</code></td>
+<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/uberon">UBERON ID</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>To lookup ontology terms, we recommend using the <a href="https://www.ebi.ac.uk/ols4/">EMBL-EBI Ontology Lookup
+Service</a>.</p>
+<p>Models have a limited acceptable range of metadata input values. If
+you provide a value that is not in the acceptable range, the API will
+return an error.</p>
 </div>
 <div id="making-predictions" class="section level3">
 <h3>Making Predictions</h3>
 <p>Once your query is ready, you can send it to the API to generate gene
 expression data.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Request raw counts data</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">as_counts =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Request counts data (not log-CPM)</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">as_counts =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>If you want the full API response beyond just than just the result of
 the metadata and expression returned put
 <code>raw_response = TRUE</code>.</p>
 </div>
 <div id="working-with-results" class="section level3">
 <h3>Working with Results</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Access metadata and expression matrices</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> result<span class="sc">$</span>metadata</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>expression <span class="ot">&lt;-</span> result<span class="sc">$</span>expression</span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Check dimensions</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="fu">dim</span>(expression)</span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co"># View metadata sample</span></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="fu">head</span>(metadata)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Access metadata and expression matrices</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> result<span class="sc">$</span>metadata</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>expression <span class="ot">&lt;-</span> result<span class="sc">$</span>expression</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co"># Check dimensions</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="fu">dim</span>(expression)</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co"># View metadata sample</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="fu">head</span>(metadata)</span></code></pre></div>
 <p>You may want to process the data in chunks or save it for later
 use:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Save results to RDS file</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">saveRDS</span>(result, <span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Load previously saved results</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co"># Export as CSV</span></span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>expression, <span class="st">&quot;expression_matrix.csv&quot;</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>metadata, <span class="st">&quot;sample_metadata.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Save results to RDS file</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">saveRDS</span>(result, <span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Load previously saved results</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co"># Export as CSV</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>expression, <span class="st">&quot;expression_matrix.csv&quot;</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>metadata, <span class="st">&quot;sample_metadata.csv&quot;</span>)</span></code></pre></div>
 </div>
 <div id="custom-validation" class="section level3">
 <h3>Custom Validation</h3>
 <p>You can validate your queries before sending them to the API:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Validate structure</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">validate_query</span>(query)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># Validate modality</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">validate_modality</span>(query)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Validate structure</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">validate_query</span>(query)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Validate modality</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">validate_modality</span>(query)</span></code></pre></div>
 </div>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>
@@ -515,7 +584,6 @@ Code</a></li>
 <li><a href="https://github.com/synthesizebio/rsynthbio/issues">File Bug
 Reports</a></li>
 </ul>
-</div>
 </div>
 
 
