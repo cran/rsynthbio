@@ -2,7 +2,7 @@
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE  # Set to FALSE since API calls require credentials
+  eval = FALSE # Set to FALSE since API calls require credentials
 )
 
 ## ----installation, eval=FALSE-------------------------------------------------
@@ -40,18 +40,32 @@ knitr::opts_chunk$set(
 # # Clear token from both session and keyring
 # clear_synthesize_token(remove_from_keyring = TRUE)
 
+## ----modalities---------------------------------------------------------------
+# # Check available modalities
+# get_valid_modalities()
+
 ## ----query--------------------------------------------------------------------
-# # Get a sample query
-# query <- get_valid_query()
+# # Get a sample query for bulk RNA-seq
+# query <- get_valid_query(modality = "bulk")
+# 
+# # Get a sample query for single-cell RNA-seq
+# query_sc <- get_valid_query(modality = "single-cell")
 # 
 # # Inspect the query structure
 # str(query)
 
 ## ----predict, eval=FALSE------------------------------------------------------
-# result <- predict_query(query)
+# result <- predict_query(query, as_counts = TRUE)
+
+## ----async-options, eval=FALSE------------------------------------------------
+# # Increase timeout for large queries (default: 900 seconds = 15 minutes)
+# result <- predict_query(
+#   query,
+#   poll_timeout_seconds = 1800, # 30 minutes
+#   poll_interval_seconds = 5 # Check every 5 seconds instead of 2
+# )
 
 ## ----modify-query-------------------------------------------------------------
-# 
 # # Adjust number of samples
 # query$inputs[[1]]$num_samples <- 10
 # 
@@ -65,8 +79,8 @@ knitr::opts_chunk$set(
 # )
 
 ## ----predict-2, eval=FALSE----------------------------------------------------
-# # Request counts data (not log-CPM)
-# result <- predict_query(query, as_counts = TRUE)
+# # Request log-transformed CPM instead of raw counts
+# result_log <- predict_query(query, as_counts = FALSE)
 
 ## ----analyze, eval=FALSE------------------------------------------------------
 # # Access metadata and expression matrices
