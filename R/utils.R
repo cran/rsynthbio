@@ -15,10 +15,23 @@ API_BASE_URL <- "https://app.synthesize.bio"
 MODEL_MODALITIES <- list()
 MODEL_MODALITIES[[RELEASE_NUMBER]] <- c("bulk", "single-cell")
 
+#' @title Model Modes
+#' @description A nested list containing supported modes for different
+#' model versions
+#' + bulk = bulk RNA-seq
+#' + single-cell = single-cell RNA-seq
+#' @format A nested list with structure: version > modality > mode
+#' @export
+MODEL_MODES <- list()
+MODEL_MODES[[RELEASE_NUMBER]] <- list(
+  "bulk" = c("sample generation", "mean estimation"),
+  "single-cell" = c("mean estimation")
+)
+
 #' @title Default Timeout
 #' @description Default timeout (seconds) for outbound HTTP requests
 #' @export
-DEFAULT_TIMEOUT <- 30
+DEFAULT_TIMEOUT <- 300
 
 #' @title Default Poll Interval
 #' @description Default polling interval (seconds) for async model queries

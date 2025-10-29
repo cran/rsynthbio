@@ -1,7 +1,7 @@
 Type: Package
 Package: rsynthbio
 Title: Synthesize Bio API Wrapper
-Version: 3.0.0
+Version: 3.0.2
 Authors@R: c(
     person("Candace", "Savonen", , 
     c("cansav09@gmail.com", "candace@synthesize.bio"),
@@ -15,15 +15,15 @@ Description: Access Synthesize Bio models from their API <https://app.synthesize
 URL: https://github.com/synthesizebio/rsynthbio
 BugReports: https://github.com/synthesizebio/rsynthbio/issues
 Imports: getPass, keyring, jsonlite, httr
-Suggests: rmarkdown, knitr, testthat (>= 3.0.0), mockery
+Suggests: rmarkdown, knitr, testthat (>= 3.0.2), mockery
 Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 License: MIT + file LICENSE
 NeedsCompilation: no
-Packaged: 2025-10-15 17:59:14 UTC; alex
+Packaged: 2025-10-29 19:21:30 UTC; candace
 Author: Candace Savonen [aut, cre]
 Maintainer: Candace Savonen <cansav09@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-10-15 18:10:02 UTC
+Date/Publication: 2025-10-29 20:00:02 UTC

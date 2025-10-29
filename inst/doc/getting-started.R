@@ -44,15 +44,21 @@ knitr::opts_chunk$set(
 # # Check available modalities
 # get_valid_modalities()
 
-## ----query--------------------------------------------------------------------
-# # Get a sample query for bulk RNA-seq
-# query <- get_valid_query(modality = "bulk")
+## ----query, eval=FALSE--------------------------------------------------------
+# # Create a bulk query
+# bulk_query <- get_valid_query(modality = "bulk")
+# bulk <- predict_query(bulk_query, as_counts = TRUE)
 # 
-# # Get a sample query for single-cell RNA-seq
-# query_sc <- get_valid_query(modality = "single-cell")
+# # Create a single-cell query
+# sc_query <- get_valid_query(modality = "single-cell")
+# sc <- predict_query(sc_query, as_counts = TRUE)
+
+## ----query-example------------------------------------------------------------
+# # Get the example query structure
+# example_query <- get_valid_query()
 # 
 # # Inspect the query structure
-# str(query)
+# str(example_query)
 
 ## ----predict, eval=FALSE------------------------------------------------------
 # result <- predict_query(query, as_counts = TRUE)
@@ -65,22 +71,59 @@ knitr::opts_chunk$set(
 #   poll_interval_seconds = 5 # Check every 5 seconds instead of 2
 # )
 
-## ----modify-query-------------------------------------------------------------
-# # Adjust number of samples
+## ----mode-examples, eval=FALSE------------------------------------------------
+# # Bulk query with sample generation (default for bulk)
+# bulk_query <- get_valid_query(modality = "bulk")
+# bulk_query$mode <- "sample generation"
+# 
+# # Bulk query with mean estimation
+# bulk_query_mean <- get_valid_query(modality = "bulk")
+# bulk_query_mean$mode <- "mean estimation"
+# 
+# # Single-cell query (must use mean estimation)
+# sc_query <- get_valid_query(modality = "single-cell")
+# sc_query$mode <- "mean estimation" # Required for single-cell
+
+## ----total-count-example, eval=FALSE------------------------------------------
+# # Create a query and add custom total_count
+# query <- get_valid_query(modality = "bulk")
+# query$total_count <- 5000000
+
+## ----deterministic-example, eval=FALSE----------------------------------------
+# # Create a query and enable deterministic latents
+# query <- get_valid_query(modality = "bulk")
+# query$deterministic_latents <- TRUE
+
+## ----seed-example, eval=FALSE-------------------------------------------------
+# # Create a query with a specific seed
+# query <- get_valid_query(modality = "bulk")
+# query$seed <- 42
+
+## ----combined-params, eval=FALSE----------------------------------------------
+# # Create a query and add multiple parameters
+# query <- get_valid_query(modality = "bulk")
+# query$total_count <- 8000000
+# query$deterministic_latents <- TRUE
+# query$mode <- "mean estimation"
+# 
+# results <- predict_query(query)
+
+## ----modify-query, eval=FALSE-------------------------------------------------
+# # Get a base query
+# query <- get_valid_query()
+# 
+# # Adjust number of samples for the first input
 # query$inputs[[1]]$num_samples <- 10
 # 
 # # Add a new condition
 # query$inputs[[3]] <- list(
 #   metadata = list(
 #     sex = "male",
-#     sample_type = "primary tissue"
+#     sample_type = "primary tissue",
+#     tissue_ontology_id = "UBERON:0002371"
 #   ),
-#   num_samples = 3
+#   num_samples = 5
 # )
-
-## ----predict-2, eval=FALSE----------------------------------------------------
-# # Request log-transformed CPM instead of raw counts
-# result_log <- predict_query(query, as_counts = FALSE)
 
 ## ----analyze, eval=FALSE------------------------------------------------------
 # # Access metadata and expression matrices
@@ -104,7 +147,7 @@ knitr::opts_chunk$set(
 # write.csv(result$expression, "expression_matrix.csv")
 # write.csv(result$metadata, "sample_metadata.csv")
 
-## ----validation---------------------------------------------------------------
+## ----validation, eval=FALSE---------------------------------------------------
 # # Validate structure
 # validate_query(query)
 # 
