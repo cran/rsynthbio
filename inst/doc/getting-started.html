@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -393,43 +394,39 @@ committed to version control.</p>
 </div>
 <div id="designing-queries-for-models" class="section level2">
 <h2>Designing Queries for Models</h2>
-<div id="choosing-a-modality" class="section level3">
-<h3>Choosing a Modality</h3>
-<p>The modality (data type to generate) is specified in the query using
-<code>get_valid_query()</code>:</p>
+<div id="choosing-a-model" class="section level3">
+<h3>Choosing a Model</h3>
+<p>The first step is to identify which model you want to use for
+prediction:</p>
 <ul>
-<li><strong><code>bulk</code></strong>: Bulk RNA-seq (asynchronous under
-the hood, returned as data frames)</li>
-<li><strong><code>single-cell</code></strong>: Single-cell RNA-seq
+<li><strong><code>gem-1-bulk</code></strong>: Bulk RNA-seq (asynchronous
+under the hood, returned as data frames)</li>
+<li><strong><code>gem-1-sc</code></strong>: Single-cell RNA-seq
 (asynchronous under the hood, returned as data frames)</li>
 </ul>
-<p>You can check which modalities are available programmatically:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Check available modalities</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">get_valid_modalities</span>()</span></code></pre></div>
-<p>You do not need to specify any internal API slugs. The library maps
-modalities to the appropriate model endpoints automatically.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create a bulk query</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>bulk <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(bulk_query, <span class="at">as_counts =</span> <span class="cn">TRUE</span>)</span>
+<p>You can check which models are available programmatically:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Check available models</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">list_models</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create a query for the bulk model</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>bulk <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(bulk_query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Create a single-cell query</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;single-cell&quot;</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>sc <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(sc_query, <span class="at">as_counts =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Create a query for the single-cell model</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>sc <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(sc_query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span></code></pre></div>
 </div>
 <div id="creating-a-query" class="section level3">
 <h3>Creating a Query</h3>
-<p>The structure of the query required by the API is fixed for the
-currently supported model. You can use <code>get_valid_query()</code> to
-get a correctly structured example list.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Get the example query structure</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>example_query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>()</span>
+<p>The structure of the query required by the API is specific to each
+model. You can use <code>get_example_query()</code> to get a correctly
+structured example for your chosen model.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Get the example query structure for a specific model</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>example_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Inspect the query structure</span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">str</span>(example_query)</span></code></pre></div>
 <p>The query consists of:</p>
 <ol style="list-style-type: decimal">
-<li><strong><code>modality</code></strong>: The type of gene expression
-data to generate (“bulk” or “single-cell”)</li>
 <li><strong><code>mode</code></strong>: The prediction mode that
 controls how expression data is generated:
 <ul>
@@ -453,7 +450,7 @@ query fields.</p>
 <h3>Making a Prediction</h3>
 <p>Once your query is ready, you can send it to the API to generate gene
 expression data:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">as_counts =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span></code></pre></div>
 <p>This result will be a list of two dataframes: <code>metadata</code>
 and <code>expression</code></p>
 </div>
@@ -478,9 +475,10 @@ URL</li>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Increase timeout for large queries (default: 900 seconds = 15 minutes)</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(</span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  query,</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">poll_timeout_seconds =</span> <span class="dv">1800</span>, <span class="co"># 30 minutes</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">poll_interval_seconds =</span> <span class="dv">5</span> <span class="co"># Check every 5 seconds instead of 2</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">poll_timeout_seconds =</span> <span class="dv">1800</span>, <span class="co"># 30 minutes</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">poll_interval_seconds =</span> <span class="dv">5</span> <span class="co"># Check every 5 seconds instead of 2</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="valid-metadata-keys" class="section level3">
 <h3>Valid Metadata Keys</h3>
@@ -597,15 +595,15 @@ want a stable estimate of expected expression levels.</p></li>
 estimation” mode.</strong> Bulk queries support both modes.</p>
 </blockquote>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Bulk query with sample generation (default for bulk)</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>bulk_query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;sample generation&quot;</span></span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Bulk query with mean estimation</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>bulk_query_mean <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>bulk_query_mean <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>bulk_query_mean<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span></span>
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co"># Single-cell query (must use mean estimation)</span></span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;single-cell&quot;</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span>
 <span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>sc_query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span> <span class="co"># Required for single-cell</span></span></code></pre></div>
 </div>
 <div id="total_count-integer-optional" class="section level4">
@@ -613,7 +611,7 @@ estimation” mode.</strong> Bulk queries support both modes.</p>
 <p>Library size used when converting predicted log CPM back to raw
 counts. Higher values scale counts up proportionally.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Create a query and add custom total_count</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>query<span class="sc">$</span>total_count <span class="ot">&lt;-</span> <span class="dv">5000000</span></span></code></pre></div>
 </div>
 <div id="deterministic_latents-logical-optional" class="section level4">
@@ -626,23 +624,23 @@ deterministic outputs for the same inputs.</p>
 <li>Default: <code>FALSE</code> (sampling is enabled)</li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Create a query and enable deterministic latents</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>query<span class="sc">$</span>deterministic_latents <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span></code></pre></div>
 </div>
 <div id="seed-integer-optional" class="section level4">
 <h4>seed (integer, optional)</h4>
 <p>Random seed for reproducibility when using stochastic sampling.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Create a query with a specific seed</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>query<span class="sc">$</span>seed <span class="ot">&lt;-</span> <span class="dv">42</span></span></code></pre></div>
 <p>You can combine multiple parameters in a single query:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Create a query and add multiple parameters</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>(<span class="at">modality =</span> <span class="st">&quot;bulk&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>query<span class="sc">$</span>total_count <span class="ot">&lt;-</span> <span class="dv">8000000</span></span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>query<span class="sc">$</span>deterministic_latents <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
 <span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span></span>
 <span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query)</span></code></pre></div>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="modifying-query-inputs" class="section level3">
@@ -650,7 +648,7 @@ deterministic outputs for the same inputs.</p>
 <p>You can customize the query inputs to fit your specific research
 needs:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Get a base query</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_valid_query</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># Adjust number of samples for the first input</span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>num_samples <span class="ot">&lt;-</span> <span class="dv">10</span></span>
@@ -688,19 +686,10 @@ use:</p>
 <span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>expression, <span class="st">&quot;expression_matrix.csv&quot;</span>)</span>
 <span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>metadata, <span class="st">&quot;sample_metadata.csv&quot;</span>)</span></code></pre></div>
 </div>
-<div id="custom-validation" class="section level3">
-<h3>Custom Validation</h3>
-<p>You can validate your queries before sending them to the API:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Validate structure</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">validate_query</span>(query)</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co"># Validate modality</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">validate_modality</span>(query)</span></code></pre></div>
-</div>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>

@@ -1,16 +1,14 @@
 Type: Package
 Package: rsynthbio
 Title: Synthesize Bio API Wrapper
-Version: 3.0.2
-Authors@R: c(
-    person("Candace", "Savonen", , 
-    c("cansav09@gmail.com", "candace@synthesize.bio"),
+Version: 4.0.0
+Authors@R: person(given = "Synthesize Bio",
+    email = "candace@synthesize.bio",
     role = c("aut", "cre"))
-    )
 Description: Access Synthesize Bio models from their API <https://app.synthesize.bio/> using
   this wrapper that provides a convenient interface to the Synthesize Bio API, allowing users
-  to generate realistic gene expression data based on specified biological conditions. This package 
-  enables researchers to easily access AI-generated transcriptomic data for various 
+  to generate realistic gene expression data based on specified biological conditions. This package
+  enables researchers to easily access AI-generated transcriptomic data for various
   modalities including bulk RNA-seq, single-cell RNA-seq, microarray data, and more.
 URL: https://github.com/synthesizebio/rsynthbio
 BugReports: https://github.com/synthesizebio/rsynthbio/issues
@@ -22,8 +20,8 @@ RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 License: MIT + file LICENSE
 NeedsCompilation: no
-Packaged: 2025-10-29 19:21:30 UTC; candace
-Author: Candace Savonen [aut, cre]
-Maintainer: Candace Savonen <cansav09@gmail.com>
+Packaged: 2025-12-03 21:25:04 UTC; jmkahn
+Author: Synthesize Bio [aut, cre]
+Maintainer: Synthesize Bio <candace@synthesize.bio>
 Repository: CRAN
-Date/Publication: 2025-10-29 20:00:02 UTC
+Date/Publication: 2025-12-03 23:40:02 UTC
