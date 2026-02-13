@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Metadata Prediction</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Metadata Prediction</h1>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>Metadata prediction models <strong>infer biological metadata from
+observed expression data</strong>. Given a gene expression profile, the
+model predicts the likely biological characteristics such as cell type,
+tissue, disease state, and more.</p>
+<p>This is useful when you want to:</p>
+<ul>
+<li>Annotate samples of unknown origin</li>
+<li>Validate sample labels against expression patterns</li>
+<li>Discover potential mislabeled or contaminated samples</li>
+<li>Understand the biological characteristics captured in expression
+data</li>
+</ul>
+</div>
+<div id="available-models" class="section level2">
+<h2>Available Models</h2>
+<ul>
+<li><strong><code>gem-1-bulk_predict-metadata</code></strong>: Bulk
+RNA-seq metadata prediction model</li>
+<li><strong><code>gem-1-sc_predict-metadata</code></strong>: Single-cell
+RNA-seq metadata prediction model</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> These endpoints may require 1-2 minutes of
+startup time if they have been scaled down. Plan accordingly for
+interactive use.</p>
+</blockquote>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rsynthbio)</span></code></pre></div>
+</div>
+<div id="how-it-works" class="section level2">
+<h2>How It Works</h2>
+<p>Metadata prediction encodes your expression data into the model’s
+latent space and then uses classifiers to predict the most likely
+metadata values for each sample. The model returns:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Classifier probabilities</strong>: For each categorical
+metadata field, the probability distribution over possible values</li>
+<li><strong>Predicted labels</strong>: The most likely value for each
+metadata field</li>
+<li><strong>Latent representations</strong>: The biological, technical,
+and perturbation latent vectors</li>
+</ol>
+</div>
+<div id="creating-a-query" class="section level2">
+<h2>Creating a Query</h2>
+<p>Metadata prediction queries are simpler than other model types—you
+only need to provide expression counts:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Get the example query structure</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>example_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)<span class="sc">$</span>example_query</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Inspect the query structure</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">str</span>(example_query)</span></code></pre></div>
+<p>The query structure includes:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong><code>inputs</code></strong>: A list of count vectors,
+where each element is a named list with a <code>counts</code> field
+containing expression values</p></li>
+<li><p><strong><code>seed</code></strong> (optional): Random seed for
+reproducibility</p></li>
+</ol>
+</div>
+<div id="example-predicting-sample-metadata" class="section level2">
+<h2>Example: Predicting Sample Metadata</h2>
+<p>Here’s a complete example predicting metadata for expression
+samples:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Start with example query structure</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)<span class="sc">$</span>example_query</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Replace with your actual expression counts</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Each input should be a list with a counts vector</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>query<span class="sc">$</span>inputs <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> sample1_counts),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> sample2_counts),</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> sample3_counts)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># Optional: set seed for reproducibility</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>query<span class="sc">$</span>seed <span class="ot">&lt;-</span> <span class="dv">42</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co"># Submit the query</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-single-sample-prediction" class="section level2">
+<h2>Example: Single Sample Prediction</h2>
+<p>For predicting metadata of a single sample:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)<span class="sc">$</span>example_query</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Single sample</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>query<span class="sc">$</span>inputs <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> my_sample_counts)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Access the predictions</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">print</span>(result<span class="sc">$</span>outputs<span class="sc">$</span>metadata)</span></code></pre></div>
+</div>
+<div id="query-parameters" class="section level2">
+<h2>Query Parameters</h2>
+<div id="inputs-list-required" class="section level3">
+<h3>inputs (list, required)</h3>
+<p>A list of expression count vectors. Each element should be a named
+list containing:</p>
+<ul>
+<li><strong><code>counts</code></strong>: A vector of non-negative
+integers representing gene expression counts</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>query<span class="sc">$</span>inputs <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">33</span>, <span class="dv">7</span>, ...)), <span class="co"># Sample 1</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">0</span>, ...)) <span class="co"># Sample 2</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="seed-integer-optional" class="section level3">
+<h3>seed (integer, optional)</h3>
+<p>Random seed for reproducibility.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>query<span class="sc">$</span>seed <span class="ot">&lt;-</span> <span class="dv">123</span></span></code></pre></div>
+</div>
+</div>
+<div id="understanding-the-results" class="section level2">
+<h2>Understanding the Results</h2>
+<p>The results from metadata prediction include several components:</p>
+<div id="predicted-metadata" class="section level3">
+<h3>Predicted Metadata</h3>
+<p>The <code>metadata</code> data frame contains the predicted values
+for each sample:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># View predicted metadata</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">head</span>(result<span class="sc">$</span>outputs<span class="sc">$</span>metadata)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Access specific predictions</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>result<span class="sc">$</span>outputs<span class="sc">$</span>metadata<span class="sc">$</span>cell_type_ontology_id</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>result<span class="sc">$</span>outputs<span class="sc">$</span>metadata<span class="sc">$</span>tissue_ontology_id</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>result<span class="sc">$</span>outputs<span class="sc">$</span>metadata<span class="sc">$</span>disease_ontology_id</span></code></pre></div>
+</div>
+<div id="classifier-probabilities" class="section level3">
+<h3>Classifier Probabilities</h3>
+<p>For categorical metadata fields, the model returns probability
+distributions over all possible values. These are useful for
+understanding prediction confidence:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># If probabilities are included in the output</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># Access cell type probabilities for first sample</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># The exact structure depends on the API response format</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Example: viewing top predicted cell types</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>cell_type_probs <span class="ot">&lt;-</span> result<span class="sc">$</span>outputs<span class="sc">$</span>classifier_probs<span class="sc">$</span>cell_type[[<span class="dv">1</span>]]</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">sort</span>(cell_type_probs, <span class="at">decreasing =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
+</div>
+<div id="latent-representations" class="section level3">
+<h3>Latent Representations</h3>
+<p>The model also returns latent vectors that capture biological,
+technical, and perturbation characteristics:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Access latent representations (if returned)</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>biological_latents <span class="ot">&lt;-</span> result<span class="sc">$</span>outputs<span class="sc">$</span>latents<span class="sc">$</span>biological</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>technical_latents <span class="ot">&lt;-</span> result<span class="sc">$</span>outputs<span class="sc">$</span>latents<span class="sc">$</span>technical</span></code></pre></div>
+</div>
+</div>
+<div id="use-cases" class="section level2">
+<h2>Use Cases</h2>
+<div id="sample-annotation" class="section level3">
+<h3>Sample Annotation</h3>
+<p>Annotate unlabeled samples with predicted metadata:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Load your unlabeled samples</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>unlabeled_counts <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;unlabeled_samples.csv&quot;</span>, <span class="at">row.names =</span> <span class="dv">1</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Create query</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)<span class="sc">$</span>example_query</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>query<span class="sc">$</span>inputs <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(unlabeled_counts), <span class="cf">function</span>(i) {</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">counts =</span> unlabeled_counts[, i])</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>})</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co"># Predict metadata</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_predict-metadata&quot;</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co"># Combine with sample IDs</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>annotations <span class="ot">&lt;-</span> result<span class="sc">$</span>outputs<span class="sc">$</span>metadata</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>annotations<span class="sc">$</span>sample_id <span class="ot">&lt;-</span> <span class="fu">colnames</span>(unlabeled_counts)</span></code></pre></div>
+</div>
+<div id="quality-control" class="section level3">
+<h3>Quality Control</h3>
+<p>Validate existing sample labels against predicted metadata:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Compare predicted vs. provided labels</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>provided_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;UBERON:0002107&quot;</span>, <span class="st">&quot;UBERON:0002107&quot;</span>, <span class="st">&quot;UBERON:0000955&quot;</span>, <span class="st">&quot;UBERON:0000955&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>predicted_labels <span class="ot">&lt;-</span> result<span class="sc">$</span>outputs<span class="sc">$</span>metadata<span class="sc">$</span>tissue_ontology_id</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co"># Identify potential mismatches</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>mismatches <span class="ot">&lt;-</span> <span class="fu">which</span>(provided_labels <span class="sc">!=</span> predicted_labels)</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(mismatches) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Potential mislabeled samples: &quot;</span>, <span class="fu">paste</span>(mismatches, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="important-notes" class="section level2">
+<h2>Important Notes</h2>
+<div id="counts-vector-length" class="section level3">
+<h3>Counts Vector Length</h3>
+<p>The counts vector for each sample must match the model’s expected
+number of genes. If the length doesn’t match, the API will return a
+validation error.</p>
+<p>Use <code>get_example_query()</code> to see the expected
+structure.</p>
+</div>
+<div id="gene-order" class="section level3">
+<h3>Gene Order</h3>
+<p>Ensure your counts are in the same gene order expected by the model.
+The gene order should match what the baseline model expects—you can
+retrieve this from any prediction result’s <code>gene_order</code>
+field.</p>
+</div>
+<div id="non-negative-counts" class="section level3">
+<h3>Non-Negative Counts</h3>
+<p>All count values must be non-negative integers. Floats that are whole
+numbers (like <code>10.0</code>) are accepted, but negative values will
+cause validation errors.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

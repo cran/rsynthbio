@@ -378,318 +378,86 @@ token. The package provides a secure way to handle authentication:</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Check if a token is already set</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">has_synthesize_token</span>()</span></code></pre></div>
+<p>You can manually set the token, but don’t commit it to version
+control!</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">set_synthesize_token</span>(<span class="at">token =</span> <span class="st">&quot;your-token-here&quot;</span>)</span></code></pre></div>
 <p>You can obtain an API token by registering at <a href="https://app.synthesize.bio">Synthesize Bio</a>.</p>
-<div id="security-best-practices" class="section level3">
-<h3>Security Best Practices</h3>
-<p>For security reasons, remember to clear your token when you’re
-done:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Clear token from current session</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">clear_synthesize_token</span>()</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Clear token from both session and keyring</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">clear_synthesize_token</span>(<span class="at">remove_from_keyring =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>Never hard-code your token in scripts that will be shared or
-committed to version control.</p>
 </div>
-</div>
-<div id="designing-queries-for-models" class="section level2">
-<h2>Designing Queries for Models</h2>
-<div id="choosing-a-model" class="section level3">
-<h3>Choosing a Model</h3>
-<p>The first step is to identify which model you want to use for
-prediction:</p>
+<div id="available-model-types" class="section level2">
+<h2>Available Model Types</h2>
+<p>Synthesize Bio provides several types of models for different use
+cases:</p>
+<div id="baseline-models" class="section level3">
+<h3>Baseline Models</h3>
+<p>Generate synthetic gene expression data from metadata alone. You
+describe the biological conditions (tissue type, disease state,
+perturbations, etc.) and the model generates realistic expression
+profiles.</p>
 <ul>
-<li><strong><code>gem-1-bulk</code></strong>: Bulk RNA-seq (asynchronous
-under the hood, returned as data frames)</li>
-<li><strong><code>gem-1-sc</code></strong>: Single-cell RNA-seq
-(asynchronous under the hood, returned as data frames)</li>
+<li><strong><code>gem-1-bulk</code></strong>: Bulk RNA-seq baseline
+model</li>
+<li><strong><code>gem-1-sc</code></strong>: Single-cell RNA-seq baseline
+model</li>
 </ul>
+<p>See the <a href="baseline.html">Baseline Models</a> vignette for
+detailed usage.</p>
+</div>
+<div id="reference-conditioning-models" class="section level3">
+<h3>Reference Conditioning Models</h3>
+<p>Generate expression data conditioned on a real reference sample. This
+allows you to “anchor” to an existing expression profile while applying
+perturbations or modifications.</p>
+<ul>
+<li><strong><code>gem-1-bulk_reference-conditioning</code></strong>:
+Bulk RNA-seq reference conditioning model</li>
+<li><strong><code>gem-1-sc_reference-conditioning</code></strong>:
+Single-cell RNA-seq reference conditioning model</li>
+</ul>
+<p>See the <a href="reference-conditioning.html">Reference
+Conditioning</a> vignette for detailed usage.</p>
+</div>
+<div id="metadata-prediction-models" class="section level3">
+<h3>Metadata Prediction Models</h3>
+<p>Infer metadata from observed expression data. Given a gene expression
+profile, predict the likely biological characteristics (cell type,
+tissue, disease state, etc.).</p>
+<ul>
+<li><strong><code>gem-1-bulk_predict-metadata</code></strong>: Bulk
+RNA-seq metadata prediction model</li>
+<li><strong><code>gem-1-sc_predict-metadata</code></strong>: Single-cell
+RNA-seq metadata prediction model</li>
+</ul>
+<p>See the <a href="metadata-prediction.html">Metadata Prediction</a>
+vignette for detailed usage.</p>
+<p>Only baseline models are available to all users. You can check which
+models are available programmatically, use <code>list_models()</code>.
+Contact us at <a href="mailto:support@synthesize.bio" class="email">support@synthesize.bio</a> if you have any questions.</p>
+</div>
+<div id="listing-available-models" class="section level3">
+<h3>Listing Available Models</h3>
 <p>You can check which models are available programmatically:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Check available models</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">list_models</span>()</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create a query for the bulk model</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>bulk <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(bulk_query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Create a query for the single-cell model</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>sc <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(sc_query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span></code></pre></div>
-</div>
-<div id="creating-a-query" class="section level3">
-<h3>Creating a Query</h3>
-<p>The structure of the query required by the API is specific to each
-model. You can use <code>get_example_query()</code> to get a correctly
-structured example for your chosen model.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Get the example query structure for a specific model</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>example_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co"># Inspect the query structure</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">str</span>(example_query)</span></code></pre></div>
-<p>The query consists of:</p>
-<ol style="list-style-type: decimal">
-<li><strong><code>mode</code></strong>: The prediction mode that
-controls how expression data is generated:
-<ul>
-<li><strong>“sample generation”</strong>: Generates realistic-looking
-synthetic data with measurement error (bulk only)</li>
-<li><strong>“mean estimation”</strong>: Provides stable mean estimates
-of expression levels (bulk and single-cell)</li>
-</ul></li>
-<li><strong><code>inputs</code></strong>: A list of biological
-conditions to generate data for</li>
-</ol>
-<p>Each input contains <code>metadata</code> (describing the biological
-sample) and <code>num_samples</code> (how many samples to generate).</p>
-<blockquote>
-<p>See the <a href="#query-parameters">Query Parameters</a> section
-below for detailed documentation on <code>mode</code> and other optional
-query fields.</p>
-</blockquote>
-</div>
-<div id="making-a-prediction" class="section level3">
-<h3>Making a Prediction</h3>
-<p>Once your query is ready, you can send it to the API to generate gene
-expression data:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span></code></pre></div>
-<p>This result will be a list of two dataframes: <code>metadata</code>
-and <code>expression</code></p>
-</div>
-<div id="understanding-the-async-api" class="section level3">
-<h3>Understanding the Async API</h3>
-<p>Behind the scenes, the API uses an <strong>asynchronous
-model</strong> to handle queries efficiently:</p>
-<ol style="list-style-type: decimal">
-<li>Your query is submitted to the API, which returns a query ID</li>
-<li>The function automatically polls the status endpoint (default: every
-2 seconds)</li>
-<li>When the query completes, results are downloaded from a signed
-URL</li>
-<li>Data is parsed and returned as R data frames</li>
-</ol>
-<p>All of this happens automatically when you call
-<code>predict_query()</code>.</p>
-</div>
-<div id="controlling-async-behavior" class="section level3">
-<h3>Controlling Async Behavior</h3>
-<p>You can customize the polling behavior if needed:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Increase timeout for large queries (default: 900 seconds = 15 minutes)</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  query,</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">poll_timeout_seconds =</span> <span class="dv">1800</span>, <span class="co"># 30 minutes</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">poll_interval_seconds =</span> <span class="dv">5</span> <span class="co"># Check every 5 seconds instead of 2</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>)</span></code></pre></div>
-</div>
-<div id="valid-metadata-keys" class="section level3">
-<h3>Valid Metadata Keys</h3>
-<p>The input metadata is a list of lists. This is the full list of valid
-metadata keys:</p>
-<p><strong>Biological:</strong></p>
-<ul>
-<li><code>age_years</code></li>
-<li><code>cell_line_ontology_id</code></li>
-<li><code>cell_type_ontology_id</code></li>
-<li><code>developmental_stage</code></li>
-<li><code>disease_ontology_id</code></li>
-<li><code>ethnicity</code></li>
-<li><code>genotype</code></li>
-<li><code>race</code></li>
-<li><code>sample_type</code> (“cell line”, “organoid”, “other”, “primary
-cells”, “primary tissue”, “xenograft”)</li>
-<li><code>sex</code> (“male”, “female”)</li>
-<li><code>tissue_ontology_id</code></li>
-</ul>
-<p><strong>Perturbational:</strong></p>
-<ul>
-<li><code>perturbation_dose</code></li>
-<li><code>perturbation_ontology_id</code></li>
-<li><code>perturbation_time</code></li>
-<li><code>perturbation_type</code>
-(“coculture”,“compound”,“control”,“crispr”,“genetic”,“infection”,“other”,“overexpression”,“peptide
-or biologic”,“shrna”,“sirna”)</li>
-</ul>
-<p><strong>Technical:</strong></p>
-<ul>
-<li><code>study</code> (Bioproject ID)</li>
-<li><code>library_selection</code> (e.g., “cDNA”, “polyA”, “Oligo-dT” -
-see <a href="https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection" class="uri">https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection</a>)</li>
-<li><code>library_layout</code> (“PAIRED”, “SINGLE”)</li>
-<li><code>platform</code> (“illumina”)</li>
-</ul>
-</div>
-<div id="valid-metadata-values" class="section level3">
-<h3>Valid Metadata Values</h3>
-<p>The following are the valid values or expected formats for selected
-metadata keys:</p>
-<table>
-<colgroup>
-<col width="11%" />
-<col width="88%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Metadata Field</th>
-<th>Requirement / Example</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>cell_line_ontology_id</code></td>
-<td>Requires a <a href="https://www.cellosaurus.org/">Cellosaurus
-ID</a>.</td>
-</tr>
-<tr class="even">
-<td><code>cell_type_ontology_id</code></td>
-<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/cl">CL
-ID</a>.</td>
-</tr>
-<tr class="odd">
-<td><code>disease_ontology_id</code></td>
-<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/mondo">MONDO ID</a>.</td>
-</tr>
-<tr class="even">
-<td><code>perturbation_ontology_id</code></td>
-<td>Must be a valid Ensembl gene ID (e.g.,
-<code>ENSG00000156127</code>), <a href="https://www.ebi.ac.uk/chebi/">ChEBI ID</a> (e.g.,
-<code>CHEBI:16681</code>), <a href="https://www.ebi.ac.uk/chembl/">ChEMBL ID</a> (e.g.,
-<code>CHEMBL1234567</code>), or <a href="https://www.ncbi.nlm.nih.gov/taxonomy">NCBI Taxonomy ID</a> (e.g.,
-<code>9606</code>).</td>
-</tr>
-<tr class="odd">
-<td><code>tissue_ontology_id</code></td>
-<td>Requires a <a href="https://www.ebi.ac.uk/ols4/ontologies/uberon">UBERON ID</a>.</td>
-</tr>
-</tbody>
-</table>
-<p>We highly recommend using the <a href="https://www.ebi.ac.uk/ols4/">EMBL-EBI Ontology Lookup Service</a>
-to find valid IDs for your metadata.</p>
-<p>Models have a limited acceptable range of metadata input values. If
-you provide a value that is not in the acceptable range, the API will
-return an error.</p>
-</div>
-<div id="query-parameters" class="section level3">
-<h3>Query Parameters</h3>
-<p>In addition to metadata, queries support several optional parameters
-that control the generation process:</p>
-<div id="mode-character-required" class="section level4">
-<h4>mode (character, required)</h4>
-<p>Controls the type of prediction the model generates. This parameter
-is required in all queries.</p>
-<p>Available modes:</p>
-<ul>
-<li><p><strong>“sample generation”</strong>: The model works identically
-to the mean estimation approach, except that the final gene expression
-distribution is also sampled to generate realistic-looking synthetic
-data that captures the error associated with measurements. This mode is
-useful when you want data that mimics real experimental
-measurements.</p></li>
-<li><p><strong>“mean estimation”</strong>: The model creates a
-distribution capturing the biological heterogeneity consistent with the
-supplied metadata. This distribution is then sampled to predict a gene
-expression distribution that captures measurement error. The mean of
-that distribution serves as the prediction. This mode is useful when you
-want a stable estimate of expected expression levels.</p></li>
-</ul>
-<blockquote>
-<p><strong>Note:</strong> <strong>Single-cell queries only support “mean
-estimation” mode.</strong> Bulk queries support both modes.</p>
-</blockquote>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Bulk query with sample generation (default for bulk)</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>bulk_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>bulk_query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;sample generation&quot;</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co"># Bulk query with mean estimation</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>bulk_query_mean <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>bulk_query_mean<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co"># Single-cell query (must use mean estimation)</span></span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>sc_query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-sc&quot;</span>)</span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>sc_query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span> <span class="co"># Required for single-cell</span></span></code></pre></div>
-</div>
-<div id="total_count-integer-optional" class="section level4">
-<h4>total_count (integer, optional)</h4>
-<p>Library size used when converting predicted log CPM back to raw
-counts. Higher values scale counts up proportionally.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Create a query and add custom total_count</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>query<span class="sc">$</span>total_count <span class="ot">&lt;-</span> <span class="dv">5000000</span></span></code></pre></div>
-</div>
-<div id="deterministic_latents-logical-optional" class="section level4">
-<h4>deterministic_latents (logical, optional)</h4>
-<p>If <code>TRUE</code>, the model uses the mean of each latent
-distribution (<code>p(z|metadata)</code> or <code>q(z|x)</code>) instead
-of sampling. This removes randomness from latent sampling and produces
-deterministic outputs for the same inputs.</p>
-<ul>
-<li>Default: <code>FALSE</code> (sampling is enabled)</li>
-</ul>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Create a query and enable deterministic latents</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>query<span class="sc">$</span>deterministic_latents <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span></code></pre></div>
-</div>
-<div id="seed-integer-optional" class="section level4">
-<h4>seed (integer, optional)</h4>
-<p>Random seed for reproducibility when using stochastic sampling.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Create a query with a specific seed</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>query<span class="sc">$</span>seed <span class="ot">&lt;-</span> <span class="dv">42</span></span></code></pre></div>
-<p>You can combine multiple parameters in a single query:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Create a query and add multiple parameters</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>query<span class="sc">$</span>total_count <span class="ot">&lt;-</span> <span class="dv">8000000</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>query<span class="sc">$</span>deterministic_latents <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>query<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="st">&quot;mean estimation&quot;</span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span></code></pre></div>
 </div>
 </div>
-<div id="modifying-query-inputs" class="section level3">
-<h3>Modifying Query Inputs</h3>
-<p>You can customize the query inputs to fit your specific research
-needs:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Get a base query</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># Adjust number of samples for the first input</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>num_samples <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co"># Add a new condition</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>  <span class="at">metadata =</span> <span class="fu">list</span>(</span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>    <span class="at">sex =</span> <span class="st">&quot;male&quot;</span>,</span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>    <span class="at">sample_type =</span> <span class="st">&quot;primary tissue&quot;</span>,</span>
-<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>    <span class="at">tissue_ontology_id =</span> <span class="st">&quot;UBERON:0002371&quot;</span></span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>  ),</span>
-<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>  <span class="at">num_samples =</span> <span class="dv">5</span></span>
-<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>)</span></code></pre></div>
-</div>
-<div id="working-with-results" class="section level3">
-<h3>Working with Results</h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Access metadata and expression matrices</span></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> result<span class="sc">$</span>metadata</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>expression <span class="ot">&lt;-</span> result<span class="sc">$</span>expression</span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a></span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co"># Check dimensions</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">dim</span>(expression)</span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co"># View metadata sample</span></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="fu">head</span>(metadata)</span></code></pre></div>
-<p>You may want to process the data in chunks or save it for later
-use:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># Save results to RDS file</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">saveRDS</span>(result, <span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co"># Load previously saved results</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;synthesize_results.rds&quot;</span>)</span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co"># Export as CSV</span></span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>expression, <span class="st">&quot;expression_matrix.csv&quot;</span>)</span>
-<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="fu">write.csv</span>(result<span class="sc">$</span>metadata, <span class="st">&quot;sample_metadata.csv&quot;</span>)</span></code></pre></div>
-</div>
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
+<p>Here’s a quick example using a baseline model:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Get an example query structure</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)<span class="sc">$</span>example_query</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Submit the query and get results</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">predict_query</span>(query, <span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># Access the results</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> result<span class="sc">$</span>metadata</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>expression <span class="ot">&lt;-</span> result<span class="sc">$</span>expression</span></code></pre></div>
+<p>For more detailed examples and advanced usage, see the model-specific
+vignettes linked above.</p>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>
