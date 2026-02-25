@@ -21,14 +21,14 @@ knitr::opts_chunk$set(
 # 
 # # Replace with your actual reference counts
 # # The counts vector must match the model's expected gene order and length
-# query$inputs[[1]]$counts <- list(counts = your_reference_counts)
+# query$inputs[[1]]$counts <- your_reference_counts
 # 
 # # Specify the perturbation
 # query$inputs[[1]]$metadata <- list(
 #   perturbation_ontology_id = "CHEMBL25", # Aspirin (ChEMBL ID)
 #   perturbation_type = "compound",
-#   perturbation_time = "24h",
-#   perturbation_dose = "10uM"
+#   perturbation_time = "24 hours",
+#   perturbation_dose = "10 um"
 # )
 # 
 # query$inputs[[1]]$num_samples <- 3
@@ -43,7 +43,7 @@ knitr::opts_chunk$set(
 # query <- get_example_query(model_id = "gem-1-bulk_reference-conditioning")$example_query
 # 
 # # Your reference sample counts
-# query$inputs[[1]]$counts <- list(counts = control_sample_counts)
+# query$inputs[[1]]$counts <- control_sample_counts
 # 
 # # CRISPR knockout of TP53
 # query$inputs[[1]]$metadata <- list(

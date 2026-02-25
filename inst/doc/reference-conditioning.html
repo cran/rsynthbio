@@ -398,7 +398,7 @@ models:</p>
 contains:</p>
 <ul>
 <li><strong><code>counts</code></strong>: The reference expression
-counts (a named list with a <code>counts</code> vector)</li>
+counts (a numeric vector)</li>
 <li><strong><code>metadata</code></strong>: Perturbation-only metadata
 (see below)</li>
 <li><strong><code>num_samples</code></strong>: How many samples to
@@ -434,14 +434,14 @@ reference sample:</p>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Replace with your actual reference counts</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># The counts vector must match the model&#39;s expected gene order and length</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>counts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">counts =</span> your_reference_counts)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>counts <span class="ot">&lt;-</span> your_reference_counts</span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># Specify the perturbation</span></span>
 <span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>metadata <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">perturbation_ontology_id =</span> <span class="st">&quot;CHEMBL25&quot;</span>, <span class="co"># Aspirin (ChEMBL ID)</span></span>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">perturbation_type =</span> <span class="st">&quot;compound&quot;</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">perturbation_time =</span> <span class="st">&quot;24h&quot;</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">perturbation_dose =</span> <span class="st">&quot;10uM&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">perturbation_time =</span> <span class="st">&quot;24 hours&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">perturbation_dose =</span> <span class="st">&quot;10 um&quot;</span></span>
 <span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>)</span>
 <span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a></span>
 <span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>num_samples <span class="ot">&lt;-</span> <span class="dv">3</span></span>
@@ -458,7 +458,7 @@ reference sample:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_example_query</span>(<span class="at">model_id =</span> <span class="st">&quot;gem-1-bulk_reference-conditioning&quot;</span>)<span class="sc">$</span>example_query</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Your reference sample counts</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>counts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">counts =</span> control_sample_counts)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>counts <span class="ot">&lt;-</span> control_sample_counts</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># CRISPR knockout of TP53</span></span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>query<span class="sc">$</span>inputs[[<span class="dv">1</span>]]<span class="sc">$</span>metadata <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -560,11 +560,13 @@ This produces deterministic, reproducible outputs.</p>
 </tr>
 <tr class="odd">
 <td><code>perturbation_time</code></td>
-<td>Time since perturbation (e.g., “24h”, “48h”)</td>
+<td>Time since perturbation, as a number and unit separated by a space
+(e.g., “24 hours”, “48 hours”)</td>
 </tr>
 <tr class="even">
 <td><code>perturbation_dose</code></td>
-<td>Dose of perturbation (e.g., “10uM”, “1mg/kg”)</td>
+<td>Dose of perturbation, as a number and unit separated by a space
+(e.g., “10 um”, “1 mg/kg”)</td>
 </tr>
 </tbody>
 </table>
