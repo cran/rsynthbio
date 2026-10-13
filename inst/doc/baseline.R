@@ -8,7 +8,7 @@ knitr::opts_chunk$set(
 ## -----------------------------------------------------------------------------
 # library(rsynthbio)
 
-## ----query-example------------------------------------------------------------
+## ----query-example, eval=FALSE------------------------------------------------
 # # Get the example query structure for a specific model
 # example_query <- get_example_query(model_id = "gem-1-bulk")$example_query
 # 

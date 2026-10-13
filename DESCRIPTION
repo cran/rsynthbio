@@ -1,7 +1,7 @@
 Type: Package
 Package: rsynthbio
 Title: Synthesize Bio API Wrapper
-Version: 4.2.0
+Version: 4.2.1
 Authors@R: person(given = "Synthesize Bio",
     email = "candace@synthesize.bio",
     role = c("aut", "cre"))
@@ -20,8 +20,8 @@ RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 License: MIT + file LICENSE
 NeedsCompilation: no
-Packaged: 2026-06-11 21:28:00 UTC; alex
+Packaged: 2026-10-13 21:19:15 UTC; stein
 Author: Synthesize Bio [aut, cre]
 Maintainer: Synthesize Bio <candace@synthesize.bio>
 Repository: CRAN
-Date/Publication: 2026-06-12 06:30:02 UTC
+Date/Publication: 2026-10-13 21:40:02 UTC

@@ -36,7 +36,7 @@ knitr::opts_chunk$set(
 ## ----eval=FALSE---------------------------------------------------------------
 # set_synthesize_token(token = "your-token-here")
 
-## ----models-------------------------------------------------------------------
+## ----models, eval=FALSE-------------------------------------------------------
 # # Check available models
 # list_models()
 
